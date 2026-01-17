@@ -1,0 +1,20 @@
+This project contains 3 main components
+    1. Backend - python fastapi
+    2. Frontend - angular
+    3. Streamlit - used for rapid dev and testing of models
+
+There is a venv being used to install all python libraries locally, the libraries are listed in py_libraries.txt
+
+new equity model - I built a factor-based stock selection and portfolio optimization model to 
+construct a 20-stock S&P 500 subset with controlled factor exposure and benchmark-relative risk.
+
+ef_model.py:
+    - Get full S&P500 Universe
+    - For each stock in the S&P500, calculate the following:
+        - Momentum of the stock over the past year
+        - Volatility of the stock
+        - Downside Volatility (worse case scenario)
+    - Create weights for the factors 
+    - Normalize each stocks factors into one alpha_score between 0 and 1
+    - Rank each stock based on the alpha_score
+    - Choose the top 20 stocks from the ranking and use that for the portfolio

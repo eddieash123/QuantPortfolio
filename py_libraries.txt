@@ -1,0 +1,11 @@
+yfinance
+pandas
+numpy
+scipy
+matplotlib
+streamlit
+fastapi
+uvicorn
+pydantic
+scikit-learn
+lxml
