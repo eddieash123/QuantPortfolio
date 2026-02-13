@@ -18,3 +18,165 @@ ef_model.py:
     - Normalize each stocks factors into one alpha_score between 0 and 1
     - Rank each stock based on the alpha_score
     - Choose the top 20 stocks from the ranking and use that for the portfolio
+
+generate here
+
+## Project Overview
+
+OneStopQuant is a quantitative portfolio management system that combines factor-based stock selection, portfolio optimization, and Monte Carlo simulation to construct and analyze diversified equity portfolios from the S&P 500 universe.
+
+## Architecture
+
+### Core Components
+
+1. Hybrid Selection Engine (`hybrid_selection.py`)
+   - Downloads S&P 500 constituents from Wikipedia
+   - Applies liquidity filters (minimum $2M daily dollar volume)
+   - Calculates multi-factor scores for each stock
+   - Uses correlation-based clustering for diversification
+   - Selects top performers from each cluster
+
+2. **Portfolio Optimizer** (`optomize_p.py`)
+   - Maximizes Sharpe ratio using scipy optimization
+   - Enforces diversification constraints (5-30% per position)
+   - Accounts for risk-free rate (4.13% US 10-year Treasury)
+   - Prevents concentration risk
+
+3. **Monte Carlo Simulator** (`monte_carlo_p.py`)
+   - Simulates 1000+ portfolio paths over 252 trading days
+   - Uses log returns for accurate compounding
+   - Generates expected return distributions
+   - Visualizes uncertainty ranges
+
+4. **Data Management** (`data_loader.py`)
+   - Caches data locally with 7-day refresh cycle
+   - Excludes COVID era (2020-2021) for realistic expectations
+   - Handles MultiIndex DataFrames from yfinance
+   - Provides both price and volume data
+
+### Factor Model
+
+**Three-Factor Scoring System:**
+
+1. **Momentum (40% weight)**
+   - 252-day price change, lagged 21 days
+   - Captures trend-following behavior
+   - Avoids short-term noise
+
+2. **Low Volatility (30% weight)**
+   - 60-day rolling standard deviation
+   - Inverted (lower vol = higher score)
+   - Reduces portfolio drawdowns
+
+3. **Quality (30% weight)**
+   - 126-day downside volatility
+   - Measures worst-case risk
+   - Filters out unstable stocks
+
+**Scoring Process:**
+- Calculate raw factor values for all S&P 500 stocks
+- Rank each factor from 0-1 (percentile ranking)
+- Compute weighted composite alpha score
+- Filter out stocks with insufficient data (NaN handling)
+
+### Diversification Strategy
+
+**Clustering Approach:**
+1. Calculate correlation matrix from returns
+2. Convert to distance matrix (1 - correlation)
+3. Apply Agglomerative Clustering with precomputed distances
+4. Create N clusters (default: 5-10)
+5. Select top M stocks per cluster (default: 2)
+6. Result: 10-20 stocks across uncorrelated sectors
+
+**Why This Works:**
+- Prevents concentration in single sectors (e.g., all tech stocks)
+- Maintains factor quality within each cluster
+- Balances diversification with performance
+- More robust than pure factor ranking
+
+### Data Pipeline
+
+**Historical Data:**
+- Pre-COVID: 2017-2019 (3 years)
+- Post-COVID: 2022-2025 (3 years)
+- Total: 6 years excluding extreme volatility
+
+**Filtering Steps:**
+1. Remove delisted/merged tickers
+2. Drop stocks with < $2M daily volume
+3. Exclude stocks with insufficient history for factor calculations
+4. Filter NaN factor scores before clustering
+
+### Optimization Constraints
+
+**Position Limits:**
+- Minimum weight: 5% per stock
+- Maximum weight: 30% per stock
+- Total portfolio: 100% (fully invested)
+
+**Objective Function:**
+- Maximize: (Portfolio Return - Risk Free Rate) / Portfolio Volatility
+- Method: SLSQP (Sequential Least Squares Programming)
+- Constraints: Linear equality (weights sum to 1)
+
+### Performance Metrics
+
+**Sharpe Ratio:**
+- Annualized return / Annualized volatility
+- Adjusted for 4.13% risk-free rate
+- Compares optimized vs equal-weight portfolios
+
+**Monte Carlo Outputs:**
+- Expected 1-year return (median path)
+- Confidence intervals (10th-90th percentile)
+- Maximum drawdown scenarios
+- Distribution visualization
+
+
+## Technical Decisions
+
+**Why Exclude COVID Era?**
+- 2020-2021 had 60%+ returns (unsustainable)
+- Creates unrealistic forward expectations
+- Skews factor calculations
+- Better to use normal market conditions
+
+**Why Clustering Before Selection?**
+- Pure factor ranking often picks correlated stocks
+- Clustering ensures sector diversification
+- Reduces portfolio correlation risk
+- More stable during market rotations
+
+**Why Min/Max Weight Constraints?**
+- Unconstrained optimization concentrates in 2-3 stocks
+- Forces diversification across all selected stocks
+- Reduces single-stock risk
+- More practical for real portfolios
+
+## Expected Results
+
+**Typical Portfolio:**
+- 10-14 stocks across 5-7 sectors
+- Sharpe ratio: 1.2-1.8 (vs 0.8-1.0 for S&P 500)
+- Expected return: 12-18% annually
+- Max drawdown: 15-25%
+
+**Diversification:**
+- Tech: 2-3 stocks
+- Healthcare: 1-2 stocks
+- Financials: 1-2 stocks
+- Consumer: 1-2 stocks
+- Industrials: 1-2 stocks
+- Other sectors: 2-3 stocks
+
+## Future Enhancements
+
+- Real-time data updates via FastAPI backend
+- Interactive Angular dashboard
+- Backtesting engine with transaction costs
+- Risk parity allocation option
+- ESG factor integration
+- Multi-asset class support (bonds, commodities)
+- Rebalancing scheduler
+- Tax-loss harvesting optimizer

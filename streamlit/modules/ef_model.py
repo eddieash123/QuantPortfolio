@@ -2,9 +2,7 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 from scipy.optimize import minimize
-
 import matplotlib.pyplot as plt
-
 import requests
 
 # Wikipedia URL for S&P 500 companies
