@@ -1,28 +1,33 @@
-#Project Overview
+# Project Overview
 
 This project is a quantitative portfolio management system that combines:
 - factor-based stock selection 
 - portfolio optimization
 - Monte Carlo simulation 
+
 to construct and analyze diversified equity portfolios from the S&P 500 universe.
 
+# Installation Instructions
 
-#Installation Instructions:
-
-##Create and activate virtual environment:
+## Create and activate virtual environment
+```bash
 python -m venv venv
 source venv/bin/activate
+```
 
-##Install dependencies (from the root):
+## Install dependencies (from the root)
+```bash
 pip install -r py_libraries.txt
+```
 
-##Run the app (from the root):
+## Run the app (from the root)
+```bash
 streamlit run streamlit/app.py
+```
 
+# Architecture
 
-#Architecture
-
-##Core Components
+## Core Components
 
 1. Hybrid Selection Engine (hybrid_selection.py)
    - Downloads S&P 500 constituents from Wikipedia
@@ -49,10 +54,10 @@ streamlit run streamlit/app.py
    - Handles MultiIndex DataFrames from yfinance
    - Provides both price and volume data
 
+## Factor Model
 
-##Factor Model
+### Three-Factor Scoring System
 
-Three-Factor Scoring System:
 1. Momentum (40% weight)
    - 252-day price change, lagged 21 days
    - Captures trend-following behavior
@@ -68,17 +73,15 @@ Three-Factor Scoring System:
    - Measures worst-case risk
    - Filters out unstable stocks
 
-
-##Scoring Process:
+## Scoring Process
 - Calculate raw factor values for all S&P 500 stocks
 - Rank each factor from 0-1 (percentile ranking)
 - Compute weighted composite alpha score
 - Filter out stocks with insufficient data (NaN handling)
 
+## Diversification Strategy
 
-##Diversification Strategy
-
-Clustering Approach:
+### Clustering Approach
 1. Calculate correlation matrix from returns
 2. Convert to distance matrix (1 - correlation)
 3. Apply Agglomerative Clustering with precomputed distances
@@ -86,41 +89,38 @@ Clustering Approach:
 5. Select top M stocks per cluster (default: 2)
 6. Result: 10-20 stocks across uncorrelated sectors
 
-Why This Works:
+### Why This Works
 - Prevents concentration in single sectors (e.g., all tech stocks)
 - Maintains factor quality within each cluster
 - Balances diversification with performance
 - More robust than pure factor ranking
 
+## Data Pipeline
 
-##Data Pipeline
-
-Historical Data:
+### Historical Data
 - Pre-COVID: 2017-2019 (3 years)
 - Post-COVID: 2022-2025 (3 years)
 - Total: 6 years excluding extreme volatility
 
-Filtering Steps:
+### Filtering Steps
 1. Remove delisted/merged tickers
 2. Drop stocks with < $2M daily volume
 3. Exclude stocks with insufficient history for factor calculations
 4. Filter NaN factor scores before clustering
 
+## Optimization Constraints
 
-##Optimization Constraints
-
-Position Limits:
+### Position Limits
 - Minimum weight: 5% per stock
 - Maximum weight: 30% per stock
 - Total portfolio: 100% (fully invested)
 
-Objective Function:
+### Objective Function
 - Maximize: (Portfolio Return - Risk Free Rate) / Portfolio Volatility
 - Method: SLSQP (Sequential Least Squares Programming)
 - Constraints: Linear equality (weights sum to 1)
 
-
-##Performance Metrics
+## Performance Metrics
 
 Sharpe Ratio:
 - Annualized return / Annualized volatility
@@ -133,8 +133,7 @@ Monte Carlo Outputs:
 - Maximum drawdown scenarios
 - Distribution visualization
 
-
-##Technical Decisions
+## Technical Decisions
 
 Why Exclude COVID Era?
 - 2020-2021 had 60%+ returns (unsustainable)
@@ -154,7 +153,7 @@ Why Min/Max Weight Constraints?
 - Reduces single-stock risk
 - More practical for real portfolios
 
-Expected Results
+## Expected Results
 
 Typical Portfolio:
 - 10-14 stocks across 5-7 sectors
@@ -170,7 +169,7 @@ Diversification:
 - Industrials: 1-2 stocks
 - Other sectors: 2-3 stocks
 
-Future Enhancements
+## Future Enhancements
 
 - Interactive Angular dashboard
 - Backtesting engine with transaction costs
