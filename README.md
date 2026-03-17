@@ -73,7 +73,7 @@ streamlit run streamlit/app.py
    - Measures worst-case risk
    - Filters out unstable stocks
 
-## Scoring Process
+### Scoring Process
 - Calculate raw factor values for all S&P 500 stocks
 - Rank each factor from 0-1 (percentile ranking)
 - Compute weighted composite alpha score
@@ -122,12 +122,12 @@ streamlit run streamlit/app.py
 
 ## Performance Metrics
 
-Sharpe Ratio:
+### Sharpe Ratio:
 - Annualized return / Annualized volatility
 - Adjusted for 4.13% risk-free rate
 - Compares optimized vs equal-weight portfolios
 
-Monte Carlo Outputs:
+### Monte Carlo Outputs:
 - Expected 1-year return (median path)
 - Confidence intervals (10th-90th percentile)
 - Maximum drawdown scenarios
@@ -135,19 +135,19 @@ Monte Carlo Outputs:
 
 ## Technical Decisions
 
-Why Exclude COVID Era?
+### Why Exclude COVID Era?
 - 2020-2021 had 60%+ returns (unsustainable)
 - Creates unrealistic forward expectations
 - Skews factor calculations
 - Better to use normal market conditions
 
-Why Clustering Before Selection?
+### Why Clustering Before Selection?
 - Pure factor ranking often picks correlated stocks
 - Clustering ensures sector diversification
 - Reduces portfolio correlation risk
 - More stable during market rotations
 
-Why Min/Max Weight Constraints?
+### Why Min/Max Weight Constraints?
 - Unconstrained optimization concentrates in 2-3 stocks
 - Forces diversification across all selected stocks
 - Reduces single-stock risk
@@ -155,13 +155,13 @@ Why Min/Max Weight Constraints?
 
 ## Expected Results
 
-Typical Portfolio:
+### Typical Portfolio:
 - 10-14 stocks across 5-7 sectors
 - Sharpe ratio: 1.2-1.8 (vs 0.8-1.0 for S&P 500)
 - Expected return: 12-18% annually
 - Max drawdown: 15-25%
 
-Diversification:
+### Diversification:
 - Tech: 2-3 stocks
 - Healthcare: 1-2 stocks
 - Financials: 1-2 stocks
