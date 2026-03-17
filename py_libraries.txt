@@ -4,8 +4,6 @@ numpy
 scipy
 matplotlib
 streamlit
-fastapi
-uvicorn
-pydantic
 scikit-learn
+requests
 lxml

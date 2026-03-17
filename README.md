@@ -1,4 +1,4 @@
-Project Overview
+#Project Overview
 
 This project is a quantitative portfolio management system that combines:
 - factor-based stock selection 
@@ -6,9 +6,23 @@ This project is a quantitative portfolio management system that combines:
 - Monte Carlo simulation 
 to construct and analyze diversified equity portfolios from the S&P 500 universe.
 
-Architecture
 
-Core Components
+#Installation Instructions:
+
+##Create and activate virtual environment:
+python -m venv venv
+source venv/bin/activate
+
+##Install dependencies (from the root):
+pip install -r py_libraries.txt
+
+##Run the app (from the root):
+streamlit run streamlit/app.py
+
+
+#Architecture
+
+##Core Components
 
 1. Hybrid Selection Engine (hybrid_selection.py)
    - Downloads S&P 500 constituents from Wikipedia
@@ -35,10 +49,10 @@ Core Components
    - Handles MultiIndex DataFrames from yfinance
    - Provides both price and volume data
 
-Factor Model
+
+##Factor Model
 
 Three-Factor Scoring System:
-
 1. Momentum (40% weight)
    - 252-day price change, lagged 21 days
    - Captures trend-following behavior
@@ -54,13 +68,15 @@ Three-Factor Scoring System:
    - Measures worst-case risk
    - Filters out unstable stocks
 
-Scoring Process:
+
+##Scoring Process:
 - Calculate raw factor values for all S&P 500 stocks
 - Rank each factor from 0-1 (percentile ranking)
 - Compute weighted composite alpha score
 - Filter out stocks with insufficient data (NaN handling)
 
-Diversification Strategy
+
+##Diversification Strategy
 
 Clustering Approach:
 1. Calculate correlation matrix from returns
@@ -76,7 +92,8 @@ Why This Works:
 - Balances diversification with performance
 - More robust than pure factor ranking
 
-Data Pipeline
+
+##Data Pipeline
 
 Historical Data:
 - Pre-COVID: 2017-2019 (3 years)
@@ -89,7 +106,8 @@ Filtering Steps:
 3. Exclude stocks with insufficient history for factor calculations
 4. Filter NaN factor scores before clustering
 
-Optimization Constraints
+
+##Optimization Constraints
 
 Position Limits:
 - Minimum weight: 5% per stock
@@ -101,7 +119,8 @@ Objective Function:
 - Method: SLSQP (Sequential Least Squares Programming)
 - Constraints: Linear equality (weights sum to 1)
 
-Performance Metrics
+
+##Performance Metrics
 
 Sharpe Ratio:
 - Annualized return / Annualized volatility
@@ -115,7 +134,7 @@ Monte Carlo Outputs:
 - Distribution visualization
 
 
-Technical Decisions
+##Technical Decisions
 
 Why Exclude COVID Era?
 - 2020-2021 had 60%+ returns (unsustainable)
@@ -156,6 +175,3 @@ Future Enhancements
 - Interactive Angular dashboard
 - Backtesting engine with transaction costs
 - Rebalancing scheduler
-
-Run the app:
-streamlit run /Users/eddieashkenazi/VSC/OneStopQuant/streamlit/app.py
