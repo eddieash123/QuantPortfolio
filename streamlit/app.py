@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 import streamlit as st
-from modules.data_loader import load_data, log_returns
+from modules.data_loader import log_returns
 import pandas as pd
 from modules.optomize_p import optimize_portfolio
 from modules.monte_carlo_p import monte_carlo_portfolio
@@ -10,7 +10,7 @@ st.title("Stock Price Data")
 
 # Use hybrid selection: clustering + factor scoring
 st.write("Selecting tickers using hybrid method (clustering + factor scoring)...")
-tickers, df = select_hybrid_tickers(n_clusters=7, per_cluster=2)
+tickers, df = select_hybrid_tickers(n_clusters=10, per_cluster=2)
 st.write(f"Selected tickers: {tickers}")
 df_log = log_returns(df)
 

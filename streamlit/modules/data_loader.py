@@ -70,13 +70,13 @@ def download_data2():
     # Download price data
     # prices = yf.download(tickers, start=start_date, end=end_date, auto_adjust=True, progress=False)
 
-    # Download pre-COVID period (2017-2019)
-    pre_covid = yf.download(tickers, start="2017-01-01", end="2020-01-01", auto_adjust=True, progress=False)
+    # Download pre-COVID period (2015-2019)
+    pre_covid = yf.download(tickers, start="2015-01-01", end="2020-01-01", auto_adjust=True, progress=False)
     
     # Download post-COVID period (2022-2025) 
-    post_covid = yf.download(tickers, start="2022-01-01", end="2025-01-01", auto_adjust=True, progress=False)
+    post_covid = yf.download(tickers, start="2022-01-01", end="2026-01-01", auto_adjust=True, progress=False)
 
-    prices = pd.concat(pre_covid,post_covid)
+    prices = pd.concat([pre_covid, post_covid])
     
     if isinstance(prices.columns, pd.MultiIndex):
         volumes = prices['Volume'].dropna(axis=1, how='all')

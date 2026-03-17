@@ -1,6 +1,10 @@
 Project Overview
 
-This project is a quantitative portfolio management system that combines factor-based stock selection, portfolio optimization, and Monte Carlo simulation to construct and analyze diversified equity portfolios from the S&P 500 universe.
+This project is a quantitative portfolio management system that combines:
+- factor-based stock selection 
+- portfolio optimization
+- Monte Carlo simulation 
+to construct and analyze diversified equity portfolios from the S&P 500 universe.
 
 Architecture
 
@@ -15,7 +19,7 @@ Core Components
 
 2. Portfolio Optimizer (optomize_p.py)
    - Maximizes Sharpe ratio using scipy optimization
-   - Enforces diversification constraints (5-30% per position)
+   - Enforces diversification constraints (1-25% per position)
    - Accounts for risk-free rate (4.13% US 10-year Treasury)
    - Prevents concentration risk
 
@@ -27,7 +31,7 @@ Core Components
 
 4. Data Management (data_loader.py)
    - Caches data locally with 7-day refresh cycle
-   - Excludes COVID era (2020-2021) for realistic expectations
+   - Excludes COVID era (2020-2022) for realistic expectations
    - Handles MultiIndex DataFrames from yfinance
    - Provides both price and volume data
 
@@ -62,7 +66,7 @@ Clustering Approach:
 1. Calculate correlation matrix from returns
 2. Convert to distance matrix (1 - correlation)
 3. Apply Agglomerative Clustering with precomputed distances
-4. Create N clusters (default: 5-10)
+4. Create N clusters (default: 10)
 5. Select top M stocks per cluster (default: 2)
 6. Result: 10-20 stocks across uncorrelated sectors
 
@@ -152,3 +156,6 @@ Future Enhancements
 - Interactive Angular dashboard
 - Backtesting engine with transaction costs
 - Rebalancing scheduler
+
+Run the app:
+streamlit run /Users/eddieashkenazi/VSC/OneStopQuant/streamlit/app.py
