@@ -71,22 +71,23 @@ def download_data2():
     # prices = yf.download(tickers, start=start_date, end=end_date, auto_adjust=True, progress=False)
 
     # Download pre-COVID period (2015-2019)
-    pre_covid = yf.download(tickers, start="2015-01-01", end="2020-01-01", auto_adjust=True, progress=False)
+    pre_covid = yf.download(tickers, start="2010-01-01", end="2020-01-01", auto_adjust=True, progress=False)
     
-    # Download post-COVID period (2022-2025) 
-    post_covid = yf.download(tickers, start="2022-01-01", end="2026-01-01", auto_adjust=True, progress=False)
+    # Download post-COVID period (2023-2025) 
+    post_covid = yf.download(tickers, start="2022-01-01", end="2025-01-01", auto_adjust=True, progress=False)
 
-    prices = pd.concat([pre_covid, post_covid])
+    # prices = pd.concat([pre_covid, post_covid])
+    prices = yf.download(tickers, start="2018-01-01", end="2025-01-01", auto_adjust=True, progress=False)
+
     
     if isinstance(prices.columns, pd.MultiIndex):
-        volumes = prices['Volume'].dropna(axis=1, how='all')
+        # volumes = prices['Volume'].dropna(axis=1, how='all') #removing liquidity filter for s&p 500, add in for other universe
         prices = prices['Close'].dropna(axis=1, how='all')
     else:
         prices = prices.dropna(axis=1, how='all')
         volumes = None
     
-    return prices, volumes
-
+    return prices
 
 def is_data_outdated():
     """Return True if CSV doesn’t exist or is older than 7 days."""

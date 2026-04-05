@@ -9,23 +9,8 @@ def select_hybrid_tickers(n_clusters, per_cluster, min_dollar_vol=2e6):
     Hybrid selection: cluster S&P 500, then pick top N from each cluster using factor scores.
     Returns: list of selected tickers and their price data
     """
-    # Get S&P 500 tickers
-    # url = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
-    # headers = {"User-Agent": "Mozilla/5.0"}
-    # html = requests.get(url, headers=headers).text
-    # sp500_table = pd.read_html(html)[0]
-    # tickers = [t.replace(".", "-") for t in sp500_table["Symbol"].tolist()]
-    
-    # # Download price data
-    # prices = yf.download(tickers, start=start_date, end=end_date, auto_adjust=True, progress=False)
-    # if isinstance(prices.columns, pd.MultiIndex):
-    #     volumes = prices['Volume'].dropna(axis=1, how='all')
-    #     prices = prices['Close'].dropna(axis=1, how='all')
-    # else:
-    #     prices = prices.dropna(axis=1, how='all')
-    #     volumes = None
 
-    prices,volumes = download_data2()
+    prices = download_data2()
 
     returns = prices.pct_change().dropna()
     
@@ -45,13 +30,13 @@ def select_hybrid_tickers(n_clusters, per_cluster, min_dollar_vol=2e6):
     prices = prices[valid_tickers]
     returns = returns[valid_tickers]
     
-    # Liquidity filter on valid tickers
-    if volumes is not None:
-        avg_dollar_vol = (prices * volumes[valid_tickers]).tail(20).mean()
-        liquid_tickers = avg_dollar_vol[avg_dollar_vol >= min_dollar_vol].index
-        prices = prices[liquid_tickers]
-        returns = returns[liquid_tickers]
-        factors = factors.loc[liquid_tickers]
+    # Liquidity filter on valid tickers (for non s&p 500 universe, can skip for s&p 500)
+    # if volumes is not None:
+    #     avg_dollar_vol = (prices * volumes[valid_tickers]).tail(20).mean()
+    #     liquid_tickers = avg_dollar_vol[avg_dollar_vol >= min_dollar_vol].index
+    #     prices = prices[liquid_tickers]
+    #     returns = returns[liquid_tickers]
+    #     factors = factors.loc[liquid_tickers]
     
     # Cluster on filtered data
     corr = returns.corr().fillna(0)

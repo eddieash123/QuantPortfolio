@@ -18,10 +18,15 @@ def monte_carlo_portfolio(df, weights, num_simulations=10000, horizon=252, df_t=
 
     # LOG RETURN STATS
     log_returns = df.values
-    mu = log_returns.mean(axis=0)            # daily log-return mean
-    cov = np.cov(log_returns.T)              # covariance of log-returns
-
     num_assets = log_returns.shape[1]
+
+    # Shrink mu toward market mean (~0.04%/day for S&P 500)
+    raw_mu = log_returns.mean(axis=0)
+    market_mu = np.full(num_assets, 0.0004)
+    shrinkage = 0.5  # 50% toward market mean
+    mu = shrinkage * market_mu + (1 - shrinkage) * raw_mu
+
+    cov = np.cov(log_returns.T) # covariance of log-returns
     all_simulations = np.zeros((num_simulations, horizon))
 
     # Cholesky for correlation structure
