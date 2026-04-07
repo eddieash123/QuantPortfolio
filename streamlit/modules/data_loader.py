@@ -7,6 +7,7 @@ import requests
 
 DATA_DIR = "streamlit/data"
 DATA_FILE = f"{DATA_DIR}/data.csv"
+SP500_CACHE = f"{DATA_DIR}/sp500_prices.parquet"
 start_date = datetime(2023, 1, 1)
 end_date = datetime(2025, 1, 1)
 
@@ -60,33 +61,26 @@ def download_data(tickers):
 
 
 def download_data2():
-    #download S&P500
+    os.makedirs(DATA_DIR, exist_ok=True)
+
+    # Return cached data if it exists
+    if os.path.exists(SP500_CACHE):
+        return pd.read_parquet(SP500_CACHE)
+
     url = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
     headers = {"User-Agent": "Mozilla/5.0"}
     html = requests.get(url, headers=headers).text
     sp500_table = pd.read_html(html)[0]
     tickers = [t.replace(".", "-") for t in sp500_table["Symbol"].tolist()]
-    
-    # Download price data
-    # prices = yf.download(tickers, start=start_date, end=end_date, auto_adjust=True, progress=False)
 
-    # Download pre-COVID period (2015-2019)
-    pre_covid = yf.download(tickers, start="2010-01-01", end="2020-01-01", auto_adjust=True, progress=False)
-    
-    # Download post-COVID period (2023-2025) 
-    post_covid = yf.download(tickers, start="2022-01-01", end="2025-01-01", auto_adjust=True, progress=False)
+    raw = yf.download(tickers, start="2015-01-01", end="2025-01-01", auto_adjust=True, progress=False)
 
-    # prices = pd.concat([pre_covid, post_covid])
-    prices = yf.download(tickers, start="2018-01-01", end="2025-01-01", auto_adjust=True, progress=False)
-
-    
-    if isinstance(prices.columns, pd.MultiIndex):
-        # volumes = prices['Volume'].dropna(axis=1, how='all') #removing liquidity filter for s&p 500, add in for other universe
-        prices = prices['Close'].dropna(axis=1, how='all')
+    if isinstance(raw.columns, pd.MultiIndex):
+        prices = raw['Close'].dropna(axis=1, how='all')
     else:
-        prices = prices.dropna(axis=1, how='all')
-        volumes = None
-    
+        prices = raw.dropna(axis=1, how='all')
+
+    prices.to_parquet(SP500_CACHE)
     return prices
 
 def is_data_outdated():
