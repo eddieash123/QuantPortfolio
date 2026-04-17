@@ -17,7 +17,7 @@ def neg_sharpe(weights, simple_returns, risk_free_rate=RISK_FREE_RATE):
     return -sharpe  # negative because we will minimize
 
 
-def optimize_portfolio(df, risk_free_rate=RISK_FREE_RATE, max_weight=0.25, min_weight=0.01):
+def optimize_portfolio(df, risk_free_rate=RISK_FREE_RATE, max_weight=0.5, min_weight=0.01):
     """
     Optimize the portfolio weights to maximize Sharpe ratio.
     Returns:
