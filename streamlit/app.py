@@ -1,18 +1,18 @@
 from matplotlib import pyplot as plt
 import streamlit as st
-from modules.data_loader import log_returns
+from modules.data_loader import download_data2, log_returns
 import pandas as pd
-from modules.optomize_p import optimize_portfolio
+from modules.optimize_p import optimize_portfolio
 from modules.monte_carlo_p import monte_carlo_portfolio
 from modules.hybrid_selection import select_hybrid_tickers
 
 st.title("Stock Price Data")
+df = download_data2()
 
 # Use hybrid selection: clustering + factor scoring
 st.write("Selecting tickers using hybrid method (clustering + factor scoring)...")
-tickers, df = select_hybrid_tickers(n_clusters=10, per_cluster=2)
+tickers, df = select_hybrid_tickers(df, n_clusters=7, per_cluster=1)
 st.write(f"Selected tickers: {tickers}")
-df_log = log_returns(df)
 
 st.write("Portfolio adj close data preview:")
 st.dataframe(df.head())
@@ -26,6 +26,7 @@ st.write("Sharpe ratio of optimized portfolio:", sharpe_opt)
 st.write("Sharpe ratio of equal-weight portfolio:", sharpe_initial)
 
 # Monte Carlo simulation
+df_log = log_returns(df)
 avg_returns, sims = monte_carlo_portfolio(df_log, optimum_weights, num_simulations=1000, horizon=252)
 
 # Example: show expected 1-year return

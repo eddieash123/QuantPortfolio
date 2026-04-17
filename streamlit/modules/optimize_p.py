@@ -1,4 +1,3 @@
-# optomize_portfolio.py
 import numpy as np
 from scipy.optimize import minimize
 

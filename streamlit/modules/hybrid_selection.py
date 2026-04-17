@@ -4,15 +4,14 @@ import numpy as np
 from sklearn.cluster import AgglomerativeClustering
 from modules.data_loader import download_data2
 
-def select_hybrid_tickers(n_clusters, per_cluster, min_dollar_vol=2e6):
+def select_hybrid_tickers(df, n_clusters, per_cluster):
     """
     Hybrid selection: cluster S&P 500, then pick top N from each cluster using factor scores.
     Returns: list of selected tickers and their price data
     """
 
-    prices = download_data2()
-
-    returns = prices.pct_change().dropna()
+    prices = df
+    returns = df.pct_change().dropna()
     
     # Calculate factor scores
     momentum = prices.pct_change(252).shift(21).iloc[-1]
@@ -25,7 +24,8 @@ def select_hybrid_tickers(n_clusters, per_cluster, min_dollar_vol=2e6):
         "Quality": -downside_vol
     }).dropna()
     
-    # Filter to only valid tickers
+    # Filter to only valid tickers (tickers that survived ".dropna()", 
+    #    otherwise the correlation and clustering will include tickers without scores)
     valid_tickers = factors.index
     prices = prices[valid_tickers]
     returns = returns[valid_tickers]
@@ -40,9 +40,9 @@ def select_hybrid_tickers(n_clusters, per_cluster, min_dollar_vol=2e6):
     
     # Cluster on filtered data
     corr = returns.corr().fillna(0)
-    dist = 1 - corr.values
-    clustering = AgglomerativeClustering(n_clusters=n_clusters, metric="precomputed", linkage="average")
-    labels = clustering.fit_predict(dist)
+    dist = 1 - corr.values # Convert correlation to distance, 0 means perfectly correlated and 2 means perfectly anti-correlated
+    clustering = AgglomerativeClustering(n_clusters=n_clusters, metric="precomputed", linkage="average") #every stock is it's own cluster, and merges until we reach n clusters
+    labels = clustering.fit_predict(dist) #array of cluster labels for each stock, same order as returns.columns
     
     # Calculate final scores
     factor_scores = factors.rank(pct=True)
